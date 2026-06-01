@@ -263,19 +263,18 @@ class VoiceCall:
                 try:
                     stream.stop_stream()
                     stream.close()
-                except Exception:
-                    pass
+                except OSError as e:
+                    print(f"[VoiceCall] stream close error: {e}")
         try:
             self._pa.terminate()
-        except Exception:
-            pass
+        except OSError as e:
+            print(f"[VoiceCall] PyAudio terminate error: {e}")
         self._in_stream  = None
         self._out_stream = None
 
     # ── Capture loop (microphone → encrypt → send) ────────────────
 
     def _capture_loop(self):
-        import struct
         silence = b'\x00' * self.CHUNK * 2   # 16-bit silence frame
         while self._active:
             try:
